@@ -1,41 +1,54 @@
+import feedparser
 import json
 import os
 from datetime import datetime
 
-# Sample deals - later we will pull from RSS or manual sources
-def generate_sample_deals():
-    return [
-        {
-            "title": "New York to Orlando $69 One-Way",
-            "price": "69",
-            "link": "https://www.travelpayouts.com/your-link-here",
-            "desc": "Great deal! Limited seats available. Book fast.",
-            "date": datetime.now().strftime("%Y-%m-%d")
-        },
-        {
-            "title": "Los Angeles to Las Vegas $49",
-            "price": "49",
-            "link": "https://www.travelpayouts.com/your-link-here",
-            "desc": "Super cheap weekend getaway.",
-            "date": datetime.now().strftime("%Y-%m-%d")
-        },
-        {
-            "title": "Chicago to Miami $89",
-            "price": "89",
-            "link": "https://www.travelpayouts.com/your-link-here",
-            "desc": "Excellent one-way fare from Chicago.",
-            "date": datetime.now().strftime("%Y-%m-%d")
-        }
-    ]
+# Good public RSS feeds for flight deals (add more later)
+RSS_FEEDS = [
+    "https://theflightdeal.com/feed/",
+    "https://www.fly4free.com/feed/",
+    # "https://secretflying.com/feed/"  # You can add more
+]
 
-def save_deals():
+def load_existing_deals():
+    if os.path.exists('data/deals.json'):
+        with open('data/deals.json', 'r') as f:
+            return json.load(f)
+    return []
+
+def save_deals(deals):
     os.makedirs('data', exist_ok=True)
-    deals = generate_sample_deals()
-    
     with open('data/deals.json', 'w') as f:
-        json.dump(deals, f, indent=2)
+        json.dump(deals[:30], f, indent=2)   # Keep only latest 30
+    print(f"✅ Saved {len(deals)} deals at {datetime.now()}")
+
+def fetch_deals():
+    existing = load_existing_deals()
+    new_deals = []
     
-    print(f"✅ Updated deals.json with {len(deals)} deals at {datetime.now()}")
+    for url in RSS_FEEDS:
+        print(f"Fetching from: {url}")
+        feed = feedparser.parse(url)
+        
+        for entry in feed.entries[:8]:   # Limit per source
+            deal = {
+                "title": entry.title[:100],
+                "price": "N/A",   # We extract later if needed
+                "link": entry.link,
+                "desc": entry.get("summary", "")[:200] or entry.get("description", "")[:200],
+                "date": datetime.now().strftime("%Y-%m-%d"),
+                "source": url
+            }
+            # Avoid duplicates
+            if not any(d['link'] == deal['link'] for d in existing + new_deals):
+                new_deals.append(deal)
+    
+    # Combine and save
+    all_deals = new_deals + existing
+    save_deals(all_deals)
+
+if __name__ == "__main__":
+    fetch_deals()
 
 if __name__ == "__main__":
     save_deals()
