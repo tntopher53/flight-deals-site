@@ -2,8 +2,11 @@ name: Auto Update Flight Deals
 
 on:
   schedule:
-    - cron: '0 */6 * * *'   # Runs every 6 hours
-  workflow_dispatch:        # Allows manual trigger
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write   # This fixes the push error
 
 jobs:
   update:
@@ -12,6 +15,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -26,5 +31,9 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add data/deals.json
-          git diff --staged --quiet || git commit -m "chore: auto update flight deals"
-          git push
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "chore: auto update flight deals"
+            git push
+          fi
