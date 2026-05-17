@@ -1,9 +1,16 @@
 [
   {
-    "title": "Sample: New York to Orlando $69",
+    "title": "New York to Orlando $69 One-Way",
     "price": "69",
     "link": "https://www.travelpayouts.com/your-link-here",
-    "desc": "One-way deal. Book fast!",
+    "desc": "Great deal! Limited seats available. Book fast before prices go up.",
+    "date": "2026-05-16"
+  },
+  {
+    "title": "Los Angeles to Las Vegas $49",
+    "price": "49",
+    "link": "https://www.travelpayouts.com/your-link-here",
+    "desc": "Super cheap weekend getaway. Perfect for quick trips.",
     "date": "2026-05-16"
   }
 ]
