@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Cheap flights from Texas. Best deals from DFW, IAH, AUS, DAL, HOU and more. Updated daily.">
-  <title>Cheap Flights from Texas - DFW, Houston, Austin Deals</title>
+  <meta name="description" content="Cheap flights from Texas - DFW, IAH, AUS and more.">
+  <title>Cheap Flights from Texas</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-50">
@@ -14,27 +14,32 @@
       <p class="text-xl mt-2">DFW • IAH • AUS • DAL • HOU • SAT • All Texas Airports</p>
     </div>
   </header>
-
   <main class="max-w-6xl mx-auto px-6 py-10">
     <a href="../index.html" class="inline-block mb-8 text-blue-600 hover:underline">← Back to Home</a>
-    
     <h2 class="text-3xl font-bold mb-8">Latest Deals from Texas</h2>
     <div id="deals-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
   </main>
-
   <script>
+    const stateKeywords = { texas: ["texas","dfw","iah","aus","dal","hou","sat","dallas","houston","austin"] };
     async function loadDeals() {
-      const response = await fetch('/data/deals.json');
-      const deals = await response.json();
+      const response = await fetch('../data/deals.json');
+      let deals = await response.json();
+      const keywords = stateKeywords.texas || [];
+      const filtered = deals.filter(deal => {
+        const text = (deal.title + " " + (deal.desc || "")).toLowerCase();
+        return keywords.some(kw => text.includes(kw));
+      });
       const container = document.getElementById('deals-list');
-      container.innerHTML = deals.map(deal => `
-        <div class="bg-white rounded-2xl shadow p-6 hover:shadow-xl">
-          <div class="text-4xl font-bold text-green-600">$${deal.price}</div>
-          <h3 class="font-semibold text-xl mt-3">${deal.title}</h3>
-          <p class="text-gray-600 mt-2">${deal.desc}</p>
-          <a href="${deal.link}" target="_blank" class="mt-6 block bg-blue-600 text-white text-center py-4 rounded-xl font-medium">
-            Book This Deal →
-          </a>
+      if (filtered.length === 0) {
+        container.innerHTML = `<p class="text-gray-500 col-span-3 text-center py-12">No Texas-specific deals right now.<br><a href="../index.html" class="text-blue-600 underline">See all deals →</a></p>`;
+        return;
+      }
+      container.innerHTML = filtered.map(deal => `
+        <div class="bg-white rounded-3xl shadow p-7 hover:shadow-xl">
+          <div class="text-5xl font-bold text-green-600">$${deal.price}</div>
+          <h3 class="font-semibold text-xl mt-4">${deal.title}</h3>
+          <p class="text-gray-600 mt-3">${deal.desc}</p>
+          <a href="${deal.link}" target="_blank" class="mt-6 block bg-blue-600 hover:bg-blue-700 text-white text-center py-4 rounded-2xl font-medium">Book This Deal →</a>
         </div>
       `).join('');
     }
