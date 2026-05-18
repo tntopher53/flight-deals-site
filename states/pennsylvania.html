@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Cheap flights from Pennsylvania. Best deals from PHL, PIT, and more. Updated daily.">
-  <title>Cheap Flights from Pennsylvania - PHL, PIT Deals</title>
+  <meta name="description" content="Cheap flights from Pennsylvania - PHL, PIT and more.">
+  <title>Cheap Flights from Pennsylvania</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-50">
@@ -20,20 +20,31 @@
     <div id="deals-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
   </main>
   <script>
+    const stateKeywords = { pennsylvania: ["pennsylvania","phl","pit","philadelphia","pittsburgh"] };
     async function loadDeals() {
       const response = await fetch('../data/deals.json');
-      const deals = await response.json();
+      let deals = await response.json();
+      const keywords = stateKeywords.pennsylvania || [];
+      const filtered = deals.filter(deal => {
+        const text = (deal.title + " " + (deal.desc || "")).toLowerCase();
+        return keywords.some(kw => text.includes(kw));
+      });
       const container = document.getElementById('deals-list');
-      container.innerHTML = deals.map(deal => `
+      if (filtered.length === 0) {
+        container.innerHTML = `<p class="text-gray-500 col-span-3 text-center py-12">No Pennsylvania-specific deals right now.<br><a href="../index.html" class="text-blue-600 underline">See all deals →</a></p>`;
+        return;
+      }
+      container.innerHTML = filtered.map(deal => `
         <div class="bg-white rounded-3xl shadow p-7 hover:shadow-xl">
           <div class="text-5xl font-bold text-green-600">$${deal.price}</div>
           <h3 class="font-semibold text-xl mt-4">${deal.title}</h3>
           <p class="text-gray-600 mt-3">${deal.desc}</p>
-          <a href="${deal.link}" target="_blank" class="mt-6 block bg-blue-600 text-white text-center py-4 rounded-2xl font-medium">Book This Deal →</a>
+          <a href="${deal.link}" target="_blank" class="mt-6 block bg-blue-600 hover:bg-blue-700 text-white text-center py-4 rounded-2xl font-medium">Book This Deal →</a>
         </div>
       `).join('');
     }
     loadDeals();
   </script>
 </body>
+</html>
 </html>
