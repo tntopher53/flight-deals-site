@@ -7,22 +7,22 @@ def get_deals():
         {
             "title": "New York to Orlando $69 One-Way",
             "price": "69",
-            "link": "https://www.travelpayouts.com/your-link-here",
-            "desc": "Great deal! Limited seats from NYC to Orlando.",
+            "link": "https://economybookings.tpx.gr/WhPRsumA",
+            "desc": "Great limited time deal. Book fast!",
             "date": datetime.now().strftime("%Y-%m-%d")
         },
         {
             "title": "Los Angeles to Las Vegas $49",
             "price": "49",
-            "link": "https://www.travelpayouts.com/your-link-here",
-            "desc": "Super cheap weekend getaway to Las Vegas.",
+            "link": "https://economybookings.tpx.gr/WhPRsumA",
+            "desc": "Perfect weekend getaway deal.",
             "date": datetime.now().strftime("%Y-%m-%d")
         },
         {
             "title": "Chicago to Miami $89",
             "price": "89",
-            "link": "https://www.travelpayouts.com/your-link-here",
-            "desc": "Excellent one-way fare.",
+            "link": "https://economybookings.tpx.gr/WhPRsumA",
+            "desc": "Excellent one-way fare available now.",
             "date": datetime.now().strftime("%Y-%m-%d")
         }
     ]
@@ -32,7 +32,7 @@ def save_deals():
     deals = get_deals()
     with open('data/deals.json', 'w') as f:
         json.dump(deals, f, indent=2)
-    print(f"✅ Saved {len(deals)} deals")
+    print(f"✅ Updated {len(deals)} deals at {datetime.now()}")
 
 if __name__ == "__main__":
     save_deals()
