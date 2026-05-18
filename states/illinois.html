@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Cheap Flights from Illinois - Chicago Deals and more. Updated daily.">
+  <title>Cheap Flights from Illinois - Chicago Deals</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+  <header class="bg-blue-700 text-white py-8">
+    <div class="max-w-6xl mx-auto px-6">
+      <h1 class="text-4xl font-bold">Cheap Flights from Illinois</h1>
+      <p class="text-xl mt-2">ORD • MDW • All Illinois Airports</p>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-6 py-10">
+    <a href="../index.html" class="inline-block mb-8 text-blue-600 hover:underline">← Back to Home</a>
+    <h2 class="text-3xl font-bold mb-8">Latest Deals from Illinois</h2>
+    <div id="deals-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+  </main>
+
+  <script>
+    async function loadDeals() {
+      const response = await fetch('../data/deals.json');
+      const deals = await response.json();
+      const container = document.getElementById('deals-list');
+      container.innerHTML = deals.map(deal => `
+        <div class="bg-white rounded-2xl shadow p-6 hover:shadow-xl">
+          <div class="text-4xl font-bold text-green-600">$${deal.price}</div>
+          <h3 class="font-semibold text-xl mt-3">${deal.title}</h3>
+          <p class="text-gray-600 mt-2">${deal.desc}</p>
+          <a href="${deal.link}" target="_blank" class="mt-6 block bg-blue-600 text-white text-center py-4 rounded-xl font-medium">
+            Book This Deal →
+          </a>
+        </div>
+      `).join('');
+    }
+    loadDeals();
+  </script>
+</body>
+</html>
