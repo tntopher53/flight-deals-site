@@ -20,11 +20,12 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-        run: python scripts/update_deals.py
-        
+
       - name: Install dependencies
-        run: pip install feedparser      - name: Update Deals
-       
+        run: pip install feedparser
+
+      - name: Update Deals
+        run: python scripts/update_deals.py
 
       - name: Commit and Push Changes
         run: |
