@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Cheap flights from California - LAX, SFO, SAN and more. Best flight deals updated daily.">
-  <title>Cheap Flights from California | Flight Deals from CA</title>
+  <meta name="description" content="Cheap flights from California - LAX, SFO, SAN and more.">
+  <title>Cheap Flights from California</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-50">
@@ -23,21 +23,57 @@
   </main>
 
   <script>
+    const stateKeywords = {
+      california: ["california", "lax", "sfo", "san", "oak", "los angeles", "san francisco", "san diego"],
+      texas: ["texas", "dfw", "iah", "aus", "dal", "hou", "sat", "dallas", "houston", "austin"],
+      florida: ["florida", "mia", "mco", "tpa", "fll", "miami", "orlando", "tampa"],
+      newyork: ["new york", "jfk", "lga", "ewr", "nyc"],
+      georgia: ["georgia", "atl", "atlanta"],
+      illinois: ["illinois", "ord", "mdw", "chicago"],
+      pennsylvania: ["pennsylvania", "phl", "pit", "philadelphia", "pittsburgh"],
+      washington: ["washington", "sea", "seattle"],
+      arizona: ["arizona", "phx", "phoenix"],
+      // Add more states here as you create pages
+    };
+
     async function loadDeals() {
-      const response = await fetch('/data/deals.json');
-      const deals = await response.json();
+      const path = window.location.pathname;
+      const stateName = path.split('/').pop().replace('.html', '').toLowerCase();
+      
+      const response = await fetch('../data/deals.json');
+      let deals = await response.json();
+
+      const keywords = stateKeywords[stateName] || [];
+      
+      // Filter deals
+      const filteredDeals = deals.filter(deal => {
+        const text = (deal.title + " " + deal.desc).toLowerCase();
+        return keywords.some(kw => text.includes(kw));
+      });
+
       const container = document.getElementById('deals-list');
-      container.innerHTML = deals.map(deal => `
-        <div class="bg-white rounded-2xl shadow p-6 hover:shadow-xl">
-          <div class="text-4xl font-bold text-green-600">$${deal.price}</div>
-          <h3 class="font-semibold text-xl mt-3">${deal.title}</h3>
-          <p class="text-gray-600 mt-2">${deal.desc}</p>
-          <a href="${deal.link}" target="_blank" class="mt-6 block bg-blue-600 text-white text-center py-4 rounded-xl font-medium">
+      
+      if (filteredDeals.length === 0) {
+        container.innerHTML = `
+          <p class="text-gray-500 col-span-3 text-center py-12">
+            No specific ${stateName.charAt(0).toUpperCase() + stateName.slice(1)} deals right now.<br>
+            <a href="../index.html" class="text-blue-600 underline">See all current deals on homepage →</a>
+          </p>`;
+        return;
+      }
+
+      container.innerHTML = filteredDeals.map(deal => `
+        <div class="bg-white rounded-3xl shadow p-7 hover:shadow-xl transition">
+          <div class="text-5xl font-bold text-green-600">$${deal.price}</div>
+          <h3 class="font-semibold text-xl mt-4">${deal.title}</h3>
+          <p class="text-gray-600 mt-3">${deal.desc}</p>
+          <a href="${deal.link}" target="_blank" class="mt-6 block bg-blue-600 hover:bg-blue-700 text-white text-center py-4 rounded-2xl font-medium">
             Book This Deal →
           </a>
         </div>
       `).join('');
     }
+
     loadDeals();
   </script>
 </body>
